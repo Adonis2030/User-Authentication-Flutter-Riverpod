@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:user_authentication/provider/auth_provider.dart';
+import 'package:user_authentication/screens/welcome_screen.dart';
 
-class LoginButton extends StatelessWidget {
+class LoginButton extends ConsumerWidget {
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final GlobalKey<FormState> formKey;
@@ -15,17 +18,24 @@ class LoginButton extends StatelessWidget {
       : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Hero(
       tag: "login_btn",
       child: ElevatedButton(
         onPressed: () async {
           if (formKey.currentState!.validate()) {
-            final navigator = Navigator.of(context);
-            final body = {
-              "email": emailController.text,
-              "password": passwordController.text
-            };
+            try {
+              final bool isAuthenticated = await ref
+                  .read(authStateProvider.notifier)
+                  .signIn(emailController.text, passwordController.text);
+              if (isAuthenticated) {
+                Navigator.pushNamed(context, '/welcome');
+              } else {
+                onError('Failed to authenticate the user.');
+              }
+            } catch (error) {
+              onError("${error.toString()} ====");
+            }
           }
         },
         child: Text(

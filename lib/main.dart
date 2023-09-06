@@ -1,17 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:user_authentication/constants/constants.dart';
 import 'package:user_authentication/screens/login_screen.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:user_authentication/screens/welcome_screen.dart';
+import 'package:user_authentication/provider/auth_provider.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
+final isAuthenticatedProvider = Provider<bool>((ref) {
+  final authState = ref.watch(authStateProvider).status;
+  print("$authState -AuthStatus");
+  return authState == AuthStatus.authenticated;
+});
+
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
+
+  static const String welcomeRoute = '/welcome';
+  static const String loginRoute = '/login';
+
+  Route<dynamic> _generateRoute(RouteSettings settings, bool isAuthenticated) {
+    switch (settings.name) {
+      case welcomeRoute:
+        if (isAuthenticated) {
+          return MaterialPageRoute(builder: (context) => const WelcomeScreen());
+        }
+        return MaterialPageRoute(builder: (context) => const LoginScreen());
+      case loginRoute:
+      default:
+        if (!isAuthenticated) {
+          return MaterialPageRoute(builder: (context) => const LoginScreen());
+        }
+        return MaterialPageRoute(builder: (context) => const WelcomeScreen());
+    }
+  }
 
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isAuthenticated = ref.watch(isAuthenticatedProvider);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'User Authentication',
@@ -40,7 +73,8 @@ class MyApp extends StatelessWidget {
               borderSide: BorderSide.none,
             ),
           )),
-      home: const LoginScreen(),
+      initialRoute: isAuthenticated ? welcomeRoute : loginRoute,
+      onGenerateRoute: (settings) => _generateRoute(settings, isAuthenticated),
     );
   }
 }
