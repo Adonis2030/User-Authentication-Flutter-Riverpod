@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:user_authentication/provider/auth_provider.dart';
 
 class LoginButton extends ConsumerWidget {
@@ -29,6 +30,24 @@ class LoginButton extends ConsumerWidget {
                   .signIn(emailController.text, passwordController.text);
               if (isAuthenticated) {
                 Navigator.pushNamed(context, '/welcome');
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Logged Successfully!',
+                      style: GoogleFonts.roboto(color: Colors.white),
+                    ),
+                    backgroundColor: Colors.green,
+                    behavior: SnackBarBehavior.floating,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20.0),
+                    ),
+                    action: SnackBarAction(
+                      label: 'Undo',
+                      onPressed: () {},
+                      textColor: Colors.yellow,
+                    ),
+                  ),
+                );
               } else {
                 onError('Failed to authenticate the user.');
               }
