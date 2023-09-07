@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:user_authentication/constants/constants.dart';
 import 'package:user_authentication/provider/auth_provider.dart';
 
@@ -13,12 +14,6 @@ class WelcomeScreen extends ConsumerWidget {
         automaticallyImplyLeading: false,
         backgroundColor: Constants.kPrimaryColor,
         title: const Text('Welcome Screen'),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pushNamed(context, '/login');
-          },
-        ),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout),
@@ -36,10 +31,10 @@ class WelcomeScreen extends ConsumerWidget {
             fit: BoxFit.cover,
           ),
         ),
-        child: const Center(
+        child: Center(
           child: Text(
             'Welcome!',
-            style: TextStyle(
+            style: GoogleFonts.sofia(
               fontSize: 35,
               fontWeight: FontWeight.bold,
               color: Colors.white,
