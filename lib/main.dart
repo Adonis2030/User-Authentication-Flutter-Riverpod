@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:user_authentication/components/indicator.dart';
 import 'package:user_authentication/constants/constants.dart';
 import 'package:user_authentication/screens/login_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,7 +16,6 @@ void main() {
 
 final isAuthenticatedProvider = Provider<bool>((ref) {
   final authState = ref.watch(authStateProvider).status;
-  print("$authState -AuthStatus");
   return authState == AuthStatus.authenticated;
 });
 
@@ -26,22 +26,41 @@ class MyApp extends ConsumerWidget {
   static const String loginRoute = '/login';
 
   Route<dynamic> _generateRoute(RouteSettings settings, bool isAuthenticated) {
+    Widget screen;
     switch (settings.name) {
       case welcomeRoute:
-        if (isAuthenticated) {
-          return MaterialPageRoute(builder: (context) => const WelcomeScreen());
-        }
-        return MaterialPageRoute(builder: (context) => const LoginScreen());
+        screen = const WelcomeScreen();
+        break;
       case loginRoute:
+        if (isAuthenticated) {
+          screen = const WelcomeScreen();
+        } else {
+          screen = const LoginScreen();
+        }
+        break;
       default:
         if (!isAuthenticated) {
-          return MaterialPageRoute(builder: (context) => const LoginScreen());
+          screen = const LoginScreen();
+        } else {
+          screen = const WelcomeScreen();
         }
-        return MaterialPageRoute(builder: (context) => const WelcomeScreen());
+        break;
     }
+
+    return MaterialPageRoute(builder: (context) {
+      return FutureBuilder(
+        future: Future.delayed(const Duration(seconds: 2)),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Indicator(text: 'Loading...');
+          } else {
+            return screen;
+          }
+        },
+      );
+    });
   }
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final isAuthenticated = ref.watch(isAuthenticatedProvider);
@@ -74,7 +93,8 @@ class MyApp extends ConsumerWidget {
             ),
           )),
       initialRoute: isAuthenticated ? welcomeRoute : loginRoute,
-      onGenerateRoute: (settings) => _generateRoute(settings, isAuthenticated),
+      onGenerateRoute: (settings) =>
+          _generateRoute(settings, ref.watch(isAuthenticatedProvider)),
     );
   }
 }

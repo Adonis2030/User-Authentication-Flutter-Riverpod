@@ -21,7 +21,7 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
   Future signIn(String email, String password) async {
     try {
       final userId = await authService.signIn(email, password);
-      if (userId.isNotEmpty) {
+      if (userId != 'invalid') {
         state = AuthState(status: AuthStatus.authenticated, userId: userId);
         return true;
       } else {
@@ -29,13 +29,18 @@ class AuthStateNotifier extends StateNotifier<AuthState> {
         return false;
       }
     } catch (error) {
-      print(error);
+      throw Exception('$error');
     }
   }
 
-  Future signOut() async {
-    await authService.signOut();
-    state = AuthState(status: AuthStatus.unauthenticated);
+  Future<bool> signOut() async {
+    try {
+      await authService.signOut();
+      state = AuthState(status: AuthStatus.unauthenticated);
+      return false;
+    } catch (error) {
+      return true;
+    }
   }
 }
 

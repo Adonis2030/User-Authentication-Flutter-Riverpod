@@ -1,7 +1,6 @@
 import 'package:user_authentication/model/user.dart';
 
 class AuthService {
-  // Simulate a fake user
   Future<String> signIn(String email, String password) async {
     await Future.delayed(const Duration(seconds: 1));
 
@@ -13,11 +12,11 @@ class AuthService {
     if (user.userId != 'invalid') {
       return user.userId;
     } else {
-      throw Exception('Invalid credentials');
+      return user.userId;
     }
   }
 
   Future<void> signOut() async {
-    await Future.delayed(const Duration(seconds: 1)); // simulate delay
+    await Future.delayed(const Duration());
   }
 }

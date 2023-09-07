@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:user_authentication/provider/auth_provider.dart';
-import 'package:user_authentication/screens/welcome_screen.dart';
 
 class LoginButton extends ConsumerWidget {
   final TextEditingController emailController;
@@ -34,7 +33,7 @@ class LoginButton extends ConsumerWidget {
                 onError('Failed to authenticate the user.');
               }
             } catch (error) {
-              onError("${error.toString()} ====");
+              onError(error.toString());
             }
           }
         },
